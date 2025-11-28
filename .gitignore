@@ -1,0 +1,4 @@
+dev-standarts.txt
+.env
+.env.*
+**/__pycache__
