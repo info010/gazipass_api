@@ -3,9 +3,6 @@ from sqlalchemy import select
 from database.models.user import User
 from utils.security import hash_pwd, verify_pwd
 
-
-# --- CREATE ---
-
 async def create_user(
     db: AsyncSession,
     username: str,
@@ -27,20 +24,15 @@ async def create_user(
     await db.refresh(user)
     return user
 
-
-# --- READ ---
-
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     q = select(User).where(User.email == email)
     res = await db.execute(q)
     return res.scalar_one_or_none()
 
-
 async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     q = select(User).where(User.username == username)
     res = await db.execute(q)
     return res.scalar_one_or_none()
-
 
 async def get_user_by_id(db: AsyncSession, user_id) -> User | None:
     q = select(User).where(User.id == user_id)
@@ -53,8 +45,6 @@ async def verify_users_pwd(db: AsyncSession, email, pwd) -> User | None:
         return user
     return None
 
-# --- UPDATE ---
-
 async def update_user(db: AsyncSession, user: User, **fields) -> User:
     for key, value in fields.items():
         if hasattr(user, key):
@@ -63,9 +53,6 @@ async def update_user(db: AsyncSession, user: User, **fields) -> User:
     await db.commit()
     await db.refresh(user)
     return user
-
-
-# --- DELETE ---
 
 async def delete_user(db: AsyncSession, user: User) -> None:
     await db.delete(user)

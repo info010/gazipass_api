@@ -25,11 +25,5 @@ class UserResponse(BaseModel):
 class TokenRequest(BaseModel):
     refresh_token: str
 
-class LogoutResponse(BaseModel):
-    success: bool
-    message: str
-
 class RefreshResponse(BaseModel):
-    success: bool
-    message: str
     access_token: str

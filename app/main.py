@@ -4,7 +4,6 @@ from fastapi import APIRouter, FastAPI, HTTPException, Request, logger
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from middleware.response_wrapper import ResponseWrapperMiddleware
 from database.init_db import init_db
 from utils.logger import setup_logging, logger
 from api.api_router import setup_routers, versioned_routers
@@ -16,8 +15,6 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
-
-app.add_middleware(ResponseWrapperMiddleware)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
