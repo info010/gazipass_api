@@ -1,9 +1,9 @@
 import base64
 import os
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from core.enums.messages import AuthMessages
 from api.v1.validators.common.api_models import APIResponse
-from api.v1.validators.auth_models import RefreshResponse, RegisterRequest, AuthResponse, UserResponse, LoginRequest, TokenRequest
+from api.v1.validators.auth_models import RefreshResponse, RegisterRequest, AuthResponse, AuthUserResponse, LoginRequest, TokenRequest
 from database.crud.user_crud import get_user_by_email, create_user, get_user_by_username, verify_users_pwd, get_user_by_id
 from database.crud.refresh_token_crud import (
     create_refresh_token,
@@ -11,7 +11,7 @@ from database.crud.refresh_token_crud import (
     revoke_refresh_token,
     delete_expired_tokens
 )
-from utils.security import create_jwt
+from core.security.crypto import create_jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 
@@ -100,7 +100,7 @@ async def login(req: LoginRequest, _db: AsyncSession) -> APIResponse[AuthRespons
             detail= AuthMessages.LOGIN_ERROR.value
         ) from e
 
-async def me(user_id: str, _db: AsyncSession) -> APIResponse[UserResponse]:
+async def me(user_id: str, _db: AsyncSession) -> APIResponse[AuthUserResponse]:
     try:
         user = await get_user_by_id(db=_db, user_id=user_id)
         if not user:
@@ -112,7 +112,7 @@ async def me(user_id: str, _db: AsyncSession) -> APIResponse[UserResponse]:
         return APIResponse(
             success= True,
             message= AuthMessages.SUCCESSFULLY_GET_CURRENT_USER.value,
-            data= UserResponse(
+            data= AuthUserResponse(
                 username=user.username,
                 email=user.email,
                 first_name=user.first_name,

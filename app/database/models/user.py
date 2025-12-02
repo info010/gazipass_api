@@ -3,14 +3,9 @@ import uuid
 from sqlalchemy import Column, DateTime, ForeignKey, String, ARRAY, Table, func 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from ..database import Base
-from enum import Enum
 
-class UserRole(Enum):
-    DEFAULT = 1
-    STUDENT = 2
-    TEACHER = 3
-    ADMIN = 4
+from core.enums.permission import UserRole
+from ..database import Base
 
 user_upvoted_posts = Table(
     "user_upvoted_posts",

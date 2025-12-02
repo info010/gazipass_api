@@ -15,4 +15,4 @@ class AuthMessages(Enum):
     LOGIN_ERROR = "Something went wrong while logining."
     ME_ERROR = "Something went wrong while get current user."
     LOGOUT_ERROR = "Something went wrong while logout current user.",
-    REFRESH_ERROR = "Something went wrong while refresh access token.",
+    REFRESH_ERROR = "Something went wrong while refresh access token."

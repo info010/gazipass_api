@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 from api.v1.controllers import auth_controller
-from api.v1.validators.auth_models import AuthResponse, LoginRequest, RefreshResponse, RegisterRequest, TokenRequest, UserResponse
+from api.v1.validators.auth_models import AuthResponse, LoginRequest, RefreshResponse, RegisterRequest, TokenRequest, AuthUserResponse
 from api.v1.validators.common.api_models import APIResponse
 from database.database import get_db
-from utils.security import get_current_user
+from core.security.auth import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/Auth", tags=["Auth"])
 @router.get(
     "/me",
     summary="Get current User",
-    response_model=APIResponse[UserResponse]
+    response_model=APIResponse[AuthUserResponse]
 )
 async def me(_claims: dict = Depends(get_current_user), _db: AsyncSession = Depends(get_db)):
     return await auth_controller.me(_claims["user_id"], _db)

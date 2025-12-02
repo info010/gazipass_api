@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database.models.user import User
-from utils.security import hash_pwd, verify_pwd
+from core.security.crypto import hash_pwd, verify_pwd
 
 async def create_user(
     db: AsyncSession,
