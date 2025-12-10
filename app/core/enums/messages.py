@@ -16,3 +16,17 @@ class AuthMessages(Enum):
     ME_ERROR = "Something went wrong while get current user."
     LOGOUT_ERROR = "Something went wrong while logout current user.",
     REFRESH_ERROR = "Something went wrong while refresh access token."
+
+class UserMessages(Enum):
+    GET_USER = "User fetched successfully."
+    GET_ALL_USERS = "Users fetched successfully."
+    USER_UPDATED = "User updated successfully."
+    USER_DELETED = "User deleted successfully."
+    USER_FOLLOWED = "User followed successfully."
+    USER_UNFOLLOWED = "User unfollowed successfully."
+    TAG_FOLLOWED = "Tag followed successfully."
+    TAG_UNFOLLOWED = "Tag unfollowed successfully."
+    ALREADY_FOLLOWING = "Already following."
+    NOT_FOLLOWING = "Not following."
+    USER_NOT_FOUND = "User not found."
+    TAG_NOT_FOUND = "Tag not found."

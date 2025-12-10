@@ -12,7 +12,7 @@ from validators.auth_models import (
     RefreshResponse
 )
 from core.common.api_models import APIResponse
-from core.security.crypto import create_jwt, verify_pwd
+from core.security.crypto import create_jwt, verify_pwd, hash_pwd
 
 from core.common.base_service import BaseService
 from repositories.user_repository import UserRepository
@@ -33,13 +33,13 @@ class AuthService(BaseService):
         user_repo = self.user_repo(self.db)
         token_repo = self.token_repo(self.db)
 
-        if await user_repo.get_by_email(req.email) or await user_repo.get_by_username(req.username):
+        if await user_repo.get_by(email = req.email) or await user_repo.get_by(username = req.username):
             self.error(AuthMessages.EMAIL_EXISTS)
 
-        new_user = await user_repo.create_user(
+        new_user = await user_repo.create(
             username=req.username,
             email=req.email,
-            password=req.password,
+            hashed_password=hash_pwd(req.password),
             first_name=req.first_name,
             last_name=req.last_name,
         )
@@ -64,7 +64,7 @@ class AuthService(BaseService):
         user_repo = self.user_repo(self.db)
         token_repo = self.token_repo(self.db)
 
-        user = await user_repo.get_by_email(req.email)
+        user = await user_repo.get_by(email = req.email)
         if not user:
             self.error(AuthMessages.USER_NOT_FOUND)
 
@@ -118,7 +118,7 @@ class AuthService(BaseService):
     async def refresh(self, req: TokenRequest) -> APIResponse[RefreshResponse]:
         token_repo = self.token_repo(self.db)
 
-        db_token = await token_repo.get_by_token(req.refresh_token)
+        db_token = await token_repo.get_by(token = req.refresh_token)
         if not db_token:
             self.error(AuthMessages.TOKEN_NOT_FOUND, 404)
 

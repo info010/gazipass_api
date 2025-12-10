@@ -1,5 +1,6 @@
 from fastapi import APIRouter, FastAPI
 from api.v1.router import v1_router
+from core.common.api_models import APIResponse
 
 routers = APIRouter(prefix="/api")
 
@@ -10,11 +11,11 @@ versioned_routers = [v1_router]
     tags=["System"]
 )
 async def health():
-    return {
-        "success": True,
-        "message": "Server health is fetched",
-        "data": {"health": "Server health is now good."}
-    }
+    return APIResponse(
+        success=True,
+        message="Server health is fetched",
+        data="Server health is now good."
+    )
 
 def setup_routers(app: FastAPI):
     for r in versioned_routers:

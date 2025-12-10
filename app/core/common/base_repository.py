@@ -24,7 +24,6 @@ class BaseRepository(Generic[ModelType]):
         return res.scalar_one_or_none()
 
     async def create(self, data: Union[ModelType, Dict]) -> ModelType:
-        """Hem model objesi hem dict ile creation desteklenir."""
         if isinstance(data, dict):
             obj = self.model(**data)
         else:
@@ -47,8 +46,13 @@ class BaseRepository(Generic[ModelType]):
         await self.db.delete(obj)
         await self.db.commit()
         return True
-
-    async def filter(self, *criteria) -> List[ModelType]:
-        q = select(self.model).where(*criteria)
+    
+    async def list(self, size: int, offset: int) -> List[ModelType]:
+        q = select(self.model).offset(offset).limit(size)
+        res = await self.db.execute(q)
+        return res.scalars().all()
+    
+    async def filter(self, size: int, offset: int, *criteria) -> List[ModelType]:
+        q = select(self.model).where(*criteria).offset(offset).limit(size)
         res = await self.db.execute(q)
         return res.scalars().all()

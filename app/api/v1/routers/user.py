@@ -1,54 +1,48 @@
-from typing import List
-from uuid import UUID
 from fastapi import APIRouter, Depends, Query
-from fastapi.security import OAuth2PasswordBearer
-
-from api.v1.validators.user_models import UserResponse
-from api.v1.validators.common.api_models import APIResponse
-from core.security.auth import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from database.database import get_db
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-router = APIRouter(prefix="/User", tags=["User"])
-
-@router.get(
-    "/",
-    summary= "Get all users",
-    response_model=APIResponse[List[UserResponse]]
+from controllers.user_controller import user_controller as ctrl
+from validators.user_models import (
+    UpdateUserRequest
 )
-async def get_all_users(query: str = Query(max_length=50), page: int = 0, size: int = 20):
-    return await user_controller.get_all_users(query, page, size)
 
-@router.get(
-    "/me",
-    summary="Get current User",
-    response_model=APIResponse[UserResponse]
-)
-async def me(_claims: dict = Depends(get_current_user), _db: AsyncSession = Depends(get_db)):
-    return await user_controller.me(_claims["user_id"], _db)
 
-@router.get(
-    "/{username}",
-    summary="Get the User has this username",
-    response_model=APIResponse[UserResponse]
-)
+router = APIRouter(prefix="/users", tags=["Users"])
+
+
+@router.get("")
+async def get_all_users(
+    size: int = Query(default=50, le=100),
+    offset: int = Query(default=0),
+    _db: AsyncSession = Depends(get_db)
+):
+    return await ctrl.with_service(_db).get_all_users(size, offset)
+
+
+@router.get("/{username}")
 async def get_user(username: str, _db: AsyncSession = Depends(get_db)):
-    return await user_controller.get_user(username, _db)
+    return await ctrl.with_service(_db).get_user(username)
 
-@router.get(
-    "/{username}/posts",
-    summary="Get the user's posts",
-    response_model=APIResponse[List[UUID]]
-)
-async def get_user_posts(username: str, page: int = 0, size: int = 20, _db: AsyncSession = Depends(get_db)):
-    return await user_controller.get_user_posts(username, page, size, _db)
+@router.patch("/{username}")
+async def update_user(username: str, payload: UpdateUserRequest, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).update_user(username)
 
-@router.get(
-    "/{username}/upvoted_posts",
-    summary="Get the user's upvoted posts",
-    response_model=APIResponse[List[UUID]]
-)
-async def get_user_posts(username: str, page: int = 0, size: int = 20, _db: AsyncSession = Depends(get_db)):
-    return await user_controller.get_user_posts(username, page, size, _db)
+@router.delete("/{username}")
+async def delete_user(username: str, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).delete_user(username)
+
+@router.post("/{username}/follow-user/{target}")
+async def follow_user(username: str, target: str, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).follow_user(username, target)
+
+@router.delete("/{username}/unfollow-user/{target}")
+async def unfollow_user(username: str, target: str, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).unfollow_user(username, target)
+
+@router.post("/{username}/follow-tag/{target}")
+async def follow_tag(username: str, target: str, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).follow_tag(username, target)
+
+@router.delete("/{username}/unfollow-tag/{target}")
+async def unfollow_tag(username: str, target: str, _db: AsyncSession = Depends(get_db)):
+    return await ctrl.with_service(_db).unfollow_user(username, target)
