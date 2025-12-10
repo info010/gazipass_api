@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from database.init_db import init_db
 from utils.logger import setup_logging, logger
-from api.api_router import setup_routers, versioned_routers
+from api.api_router import setup_routers
 
 app = FastAPI(
     title="GaziPass API",
@@ -20,7 +20,7 @@ app = FastAPI(
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"success": False, "message": exc.detail}
+        content={"success": False, "message": str(exc.detail)}
     )
 
 @app.exception_handler(RequestValidationError)

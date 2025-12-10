@@ -4,6 +4,6 @@ from pydantic import BaseModel
 T = TypeVar("T")
 
 class APIResponse(BaseModel, Generic[T]):
-    success: bool
-    message: str
-    data: Optional[T]
+    success: bool = True
+    message: Optional[str] = None
+    data: Optional[T] = None

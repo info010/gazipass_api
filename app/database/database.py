@@ -8,7 +8,8 @@ Base = declarative_base()
 
 engine: AsyncEngine = create_async_engine(
     ASYNC_DATABASE_URL,
-    echo=is_dev(),
+    # echo=is_dev(),
+    echo=False,
     future=True
 )
 
