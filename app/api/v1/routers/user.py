@@ -9,7 +9,7 @@ from validators.user_models import (
     UpdateUserRequest
 )
 
-router = APIRouter(prefix="/Users", tags=["Users"])
+router = APIRouter(prefix="/User", tags=["User"])
 
 @router.get("")
 async def get_all_users(

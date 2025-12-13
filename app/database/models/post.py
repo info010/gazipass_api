@@ -26,9 +26,11 @@ class Post(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(100), nullable=False)
     content = Column(Text, nullable=False)
+    upvotes = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     creator_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+
 
     creator = relationship("User", back_populates="posts")
     tags = relationship(
