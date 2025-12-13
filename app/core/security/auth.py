@@ -1,41 +1,28 @@
-from typing import List
-from jose import jwt, JWTError
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from validators.auth_models import JwtPayload
+from core.security.crypto import verify_jwt
 from core.enums.permission import UserRole
-from utils.config import JWT_ALGORITHM, JWT_SECRET_KEY
-
-# TODO : yapı daha doğrulanabilir ve kurallı bir hale getirilecek
 
 bearer_scheme = HTTPBearer()
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)
-) -> dict:
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+) -> JwtPayload:
+    return verify_jwt(credentials.credentials)
     
-async def required_roles(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-    roles: List[UserRole]= [UserRole.ADMIN]   
-) -> dict:
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+def required_roles(*required: UserRole):
+    async def wrapper(
+        credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)
+    ):
+        payload = verify_jwt(credentials.credentials)
+        user_roles = set(payload.roles)
+        required_roles = set(r.name for r in required)
+    
+        if not (user_roles & required_roles):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have permission for this operation."
+            )
+    return Depends(wrapper)

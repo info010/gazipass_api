@@ -20,5 +20,5 @@ class BaseService:
             data=data
         )
 
-    def error(self, message: str, status_code: int = status.HTTP_400_BAD_REQUEST):
+    def error(self, message: str | None = None, status_code: int = status.HTTP_400_BAD_REQUEST):
         raise HTTPException(status_code=status_code, detail=message)

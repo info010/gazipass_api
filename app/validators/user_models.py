@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class UserResponse(BaseModel):
@@ -7,14 +7,10 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     roles: List[str]
-    # posts: List[str]
-    # upvoted_posts: List[str]
-    # followers: List[str]
-    # followed_users: List[str]
-    # followed_tags: List[str]
     created_at: str
 
 class UpdateUserRequest(BaseModel):
-    email: str
-    first_name: str
-    last_name: str
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    roles: Optional[List[str]] = []

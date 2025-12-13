@@ -1,4 +1,8 @@
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from pydantic import BaseModel, EmailStr, Field
+from uuid import UUID
+
+from core.enums.permission import UserRole
 
 class AuthResponse(BaseModel):
     access_token: str
@@ -27,3 +31,11 @@ class TokenRequest(BaseModel):
 
 class RefreshResponse(BaseModel):
     access_token: str
+
+class JwtPayload(BaseModel):
+    user_id: UUID
+    username: str
+    roles: list[str] = Field(default_factory=lambda: [UserRole.DEFAULT.name])
+    iat: datetime
+    exp: datetime
+    jti: UUID
